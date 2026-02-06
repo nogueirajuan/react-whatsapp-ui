@@ -1,46 +1,225 @@
-# Getting Started with Create React App
+# react-whatsapp-ui
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React component library for testing WhatsApp Business API integrations locally. Build and test chat interfaces without configuring Meta webhooks or requiring an active WhatsApp Business account number.
 
-## Available Scripts
+## Why react-whatsapp-ui?
 
-In the project directory, you can run:
+When developing WhatsApp Business API integrations, you typically need to:
+- Configure a Meta webhook pointing to your production server
+- Have an active WhatsApp Business account number
+- Expose your local development machine to the internet
 
-### `npm start`
+**react-whatsapp-ui** eliminates these barriers during development. Test your chat flows, button interactions, and message handling locally with a fully functional WhatsApp-like interface. When you're ready, integrate with real webhooks seamlessly.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Features
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+✨ **Message Types**
+- Text messages with up to 3 interactive buttons
+- Photo messages with captions
+- Audio messages with player controls and timeline
+- Carousel messages (up to 10 items) with individual buttons (up to 2 per item)
 
-### `npm test`
+🎯 **Real-time Feedback**
+- Typing indicators with smooth animations
+- Simulated request delays for realistic UX testing
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+🎨 **Design**
+- WhatsApp-inspired UI with authentic styling
+- Built with Tailwind CSS for easy customization
+- Responsive design
 
-### `npm run build`
+🔧 **Developer Experience**
+- TypeScript support out of the box
+- Modular component architecture
+- Ready for webhook integration
+- Easy to extend with custom message types
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm install react-whatsapp-ui
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Quick Start
 
-### `npm run eject`
+```tsx
+import React from 'react';
+import ChatContainer from 'react-whatsapp-ui';
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+function App() {
+  return <ChatContainer />;
+}
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+export default App;
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Component Examples
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Text Message with Buttons
 
-## Learn More
+```tsx
+const textMessage = {
+  id: '1',
+  content: {
+    type: 'text',
+    text: 'Choose an option:',
+    buttons: [
+      { id: '1', text: 'Option 1' },
+      { id: '2', text: 'Option 2' },
+      { id: '3', text: 'Option 3' }
+    ]
+  },
+  sender: 'bot',
+  timestamp: new Date()
+};
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Photo Message
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```tsx
+const photoMessage = {
+  id: '2',
+  content: {
+    type: 'photo',
+    url: 'https://example.com/image.jpg',
+    caption: 'Check this out!'
+  },
+  sender: 'bot',
+  timestamp: new Date()
+};
+```
+
+### Audio Message
+
+```tsx
+const audioMessage = {
+  id: '3',
+  content: {
+    type: 'audio',
+    url: 'https://example.com/audio.mp3',
+    duration: 60
+  },
+  sender: 'bot',
+  timestamp: new Date()
+};
+```
+
+### Carousel Message
+
+```tsx
+const carouselMessage = {
+  id: '4',
+  content: {
+    type: 'carousel',
+    header: 'Select a product:',
+    items: [
+      {
+        id: '1',
+        title: 'Product 1',
+        description: 'Great product',
+        image: 'https://example.com/product1.jpg',
+        buttons: [{ id: 'a', text: 'Select' }]
+      },
+      {
+        id: '2',
+        title: 'Product 2',
+        description: 'Even better',
+        image: 'https://example.com/product2.jpg',
+        buttons: [{ id: 'b', text: 'Select' }]
+      }
+    ]
+  },
+  sender: 'bot',
+  timestamp: new Date()
+};
+```
+
+## Webhook Integration (Coming Soon)
+
+This library is designed to prepare you for real webhook integration:
+
+```tsx
+// Future: Send messages via webhook
+const handleWebhookMessage = async (payload) => {
+  const response = await fetch('your-webhook-url', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+};
+
+// Future: Receive and render webhook messages
+const handleIncomingMessage = (webhookData) => {
+  // Automatically rendered in the chat
+};
+```
+
+## TypeScript Support
+
+All components are fully typed. Check the `types/Message.ts` file for complete type definitions:
+
+```tsx
+import { Message, MessageButton, CarouselItem } from 'react-whatsapp-ui';
+```
+
+## Customization
+
+### Styling with Tailwind CSS
+
+The library uses Tailwind CSS for styling. Customize colors by updating your `tailwind.config.js`:
+
+```js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        whatsapp: {
+          primary: '#25D366',
+          secondary: '#128C7E'
+        }
+      }
+    }
+  }
+};
+```
+
+## Use Cases
+
+- 🤖 Chatbot development and testing
+- 📱 Customer support interfaces
+- 🎯 Message flow prototyping
+- 🧪 Testing WhatsApp Business API integrations without Meta configuration
+- 📊 Demonstrating chat functionality to stakeholders
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT
+
+## Related Resources
+
+- [WhatsApp Business API Documentation](https://developers.facebook.com/docs/whatsapp/cloud-api/get-started)
+- [React Documentation](https://react.dev)
+- [Tailwind CSS](https://tailwindcss.com)
+
+---
+
+**Built with ❤️ for developers testing WhatsApp integrations**
