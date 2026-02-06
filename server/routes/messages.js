@@ -6,9 +6,9 @@ const {
 const { validateMessagePayload } = require('../schemas/messageSchema');
 
 module.exports = async function messagesRoute(fastify, options) {
-  fastify.post('/:phone_id/messages', async (request, reply) => {
+  fastify.post('/:version/:waba_id/messages', async (request, reply) => {
     try {
-      const { phone_id } = request.params;
+      const { version, waba_id } = request.params;
       const payload = request.body;
 
       const validation = validateMessagePayload(payload);
