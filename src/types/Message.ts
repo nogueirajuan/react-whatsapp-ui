@@ -1,5 +1,13 @@
 export type MessageType = 'text' | 'photo' | 'audio' | 'carousel';
 
+type SupportedMessageTypes = {
+  text: TextMessageContent;
+  photo: PhotoMessageContent;
+  audio: AudioMessageContent;
+  carousel: CarouselMessageContent;
+  typing: TypingIndicatorContent;
+};
+
 export interface MessageButton {
   id: string;
   text: string;

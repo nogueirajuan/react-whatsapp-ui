@@ -1,4 +1,5 @@
 const { randomUUID } = require('crypto');
+const { getMapper } = require('../mappers');
 
 function generateWamid() {
   return `wamid.${randomUUID().replace(/-/g, '').substring(0, 24)}`;
@@ -6,19 +7,25 @@ function generateWamid() {
 
 function mapMetaPayloadToMessage(payload) {
   try {
-    if (payload.type === 'text' && payload.text?.body) {
-      return {
-        id: randomUUID(),
-        content: {
-          type: 'text',
-          text: payload.text.body,
-        },
-        sender: 'bot',
-        timestamp: new Date(),
-      };
+    const mapper = getMapper(payload.type);
+
+    if (!mapper) {
+      console.warn(`No mapper found for message type: ${payload.type}`);
+      return null;
     }
 
-    return null;
+    const content = mapper(payload);
+
+    if (!content) {
+      return null;
+    }
+
+    return {
+      id: randomUUID(),
+      content,
+      sender: 'bot',
+      timestamp: new Date(),
+    };
   } catch (error) {
     console.error('Error mapping Meta payload to message:', error);
     return null;

@@ -3,16 +3,19 @@ const {
   mapMetaPayloadToMessage,
   formatMetaResponse,
 } = require('../utils/messageMapper');
+const { validateMessagePayload } = require('../schemas/messageSchema');
 
 module.exports = async function messagesRoute(fastify, options) {
-  fastify.post('/:version/:phone_id/messages', async (request, reply) => {
+  fastify.post('/:phone_id/messages', async (request, reply) => {
     try {
-      const { version, phone_id } = request.params;
+      const { phone_id } = request.params;
       const payload = request.body;
 
-      if (!payload.type) {
+      const validation = validateMessagePayload(payload);
+
+      if (!validation.valid) {
         return reply.status(400).send({
-          error: 'Missing message type',
+          error: validation.error,
         });
       }
 
@@ -20,7 +23,7 @@ module.exports = async function messagesRoute(fastify, options) {
 
       if (!message) {
         return reply.status(400).send({
-          error: 'Invalid message format or unsupported type',
+          error: 'Failed to process message or unsupported type',
         });
       }
 
