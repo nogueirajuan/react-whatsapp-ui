@@ -18,7 +18,7 @@ const Message: React.FC<MessageProps> = ({ message, onButtonClick }) => {
   const commonProps = { isOwn };
   const contentProps = { ...message.content, ...commonProps };
 
-  if ('onButtonClick' in message.content || message.content.type === 'carousel') {
+  if (message.content.type === 'text' || message.content.type === 'interactive' || message.content.type === 'carousel') {
     Object.assign(contentProps, { onButtonClick });
   }
 
