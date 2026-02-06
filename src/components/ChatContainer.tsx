@@ -64,81 +64,11 @@ const ChatContainer: React.FC = () => {
     addMessage(
       {
         type: 'text',
-        text: `Clicked: ${button.text}`,
+        text: button.text,
       },
       'user'
     );
-
-    setIsLoading(true);
-    addMessage({ type: 'typing' }, 'bot');
-
-    setTimeout(() => {
-      removeTypingIndicator();
-
-      if (button.text === 'Show Photo') {
-        addMessage({
-          type: 'photo',
-          url: 'https://images.unsplash.com/photo-1511379938547-c1f69b13d835?w=400&h=300&fit=crop',
-          caption: 'Beautiful sunset photo',
-        });
-      } else if (button.text === 'Show Carousel') {
-        addMessage({
-          type: 'carousel',
-          header: 'Choose your favorite option:',
-          items: [
-            {
-              id: uuidv4(),
-              title: 'Option 1',
-              description: 'First carousel item',
-              image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=400&h=300&fit=crop',
-              buttons: [
-                {
-                  id: uuidv4(),
-                  text: 'Select',
-                },
-              ],
-            },
-            {
-              id: uuidv4(),
-              title: 'Option 2',
-              description: 'Second carousel item',
-              image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop',
-              buttons: [
-                {
-                  id: uuidv4(),
-                  text: 'Select',
-                },
-              ],
-            },
-            {
-              id: uuidv4(),
-              title: 'Option 3',
-              description: 'Third carousel item',
-              image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=300&fit=crop',
-              buttons: [
-                {
-                  id: uuidv4(),
-                  text: 'Select',
-                },
-              ],
-            },
-          ],
-        });
-      } else if (button.text === 'Show Audio') {
-        addMessage({
-          type: 'audio',
-          url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-          duration: 30,
-        });
-      } else {
-        addMessage({
-          type: 'text',
-          text: `You selected "${button.text}". Great choice!`,
-        });
-      }
-      setIsLoading(false);
-    }, 1500);
-  }, [addMessage, removeTypingIndicator]);
+  }, [addMessage]);
 
   const showExamples = useCallback(() => {
     setMessages([]);
