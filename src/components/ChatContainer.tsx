@@ -26,7 +26,7 @@ const ChatContainer: React.FC = () => {
     );
   }, []);
 
-  const handleSendMessage = useCallback(async (text: string) => {
+  const sendUserMessage = useCallback(async (text: string) => {
     addMessage(
       {
         type: 'text',
@@ -60,15 +60,13 @@ const ChatContainer: React.FC = () => {
     setIsLoading(false);
   }, [addMessage, removeTypingIndicator]);
 
-  const handleButtonClick = useCallback((button: MessageButton) => {
-    addMessage(
-      {
-        type: 'text',
-        text: button.text,
-      },
-      'user'
-    );
-  }, [addMessage]);
+  const handleSendMessage = useCallback(async (text: string) => {
+    await sendUserMessage(text);
+  }, [sendUserMessage]);
+
+  const handleButtonClick = useCallback(async (button: MessageButton) => {
+    await sendUserMessage(button.text);
+  }, [sendUserMessage]);
 
   const showExamples = useCallback(() => {
     setMessages([]);
