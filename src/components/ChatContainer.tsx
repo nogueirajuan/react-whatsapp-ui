@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import MessageList from './MessageList';
 import InputArea from './InputArea';
 import { Message as IMessage, MessageButton, MessageContent } from '../types/Message';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 const ChatContainer: React.FC = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -160,6 +161,20 @@ const ChatContainer: React.FC = () => {
       ],
     }, 'bot');
   }, [addMessage]);
+
+  const handleWebSocketMessage = useCallback((data: any) => {
+    if (data.type === 'new_message' && data.message) {
+      setMessages((prev) => [...prev, data.message]);
+    }
+  }, []);
+
+  useWebSocket({
+    url: 'ws://127.0.0.1:3001/ws',
+    onMessage: handleWebSocketMessage,
+    onError: (error) => {
+      console.error('WebSocket error:', error);
+    },
+  });
 
   React.useEffect(() => {
     showExamples();
