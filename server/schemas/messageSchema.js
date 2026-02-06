@@ -14,7 +14,31 @@ const textMessageSchema = baseMessageSchema.extend({
   }),
 });
 
-const messagePayloadSchema = z.union([textMessageSchema]);
+const interactiveMessageSchema = baseMessageSchema.extend({
+  type: z.literal('interactive'),
+  interactive: z.object({
+    type: z.literal('button'),
+    body: z.object({
+      text: z.string(),
+    }),
+    action: z.object({
+      buttons: z
+        .array(
+          z.object({
+            type: z.literal('reply'),
+            reply: z.object({
+              id: z.string(),
+              title: z.string(),
+            }),
+          })
+        )
+        .min(1)
+        .max(3),
+    }),
+  }),
+});
+
+const messagePayloadSchema = z.union([textMessageSchema, interactiveMessageSchema]);
 
 function validateMessagePayload(payload) {
   try {

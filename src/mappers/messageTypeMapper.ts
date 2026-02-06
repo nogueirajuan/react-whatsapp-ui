@@ -3,6 +3,7 @@ import TextMessage from '../components/TextMessage';
 import PhotoMessage from '../components/PhotoMessage';
 import AudioMessage from '../components/AudioMessage';
 import CarouselMessage from '../components/CarouselMessage';
+import InteractiveMessage from '../components/InteractiveMessage';
 import TypingIndicator from '../components/TypingIndicator';
 
 type MessageComponentType = React.FC<any>;
@@ -12,6 +13,7 @@ const componentMap: Record<string, MessageComponentType> = {
   photo: PhotoMessage,
   audio: AudioMessage,
   carousel: CarouselMessage,
+  interactive: InteractiveMessage,
   typing: TypingIndicator,
 };
 

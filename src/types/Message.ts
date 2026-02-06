@@ -46,6 +46,12 @@ export interface CarouselMessageContent {
   items: CarouselItem[];
 }
 
+export interface InteractiveMessageContent {
+  type: 'interactive';
+  text: string;
+  buttons: MessageButton[];
+}
+
 export interface TypingIndicatorContent {
   type: 'typing';
 }
@@ -55,6 +61,7 @@ export type MessageContent =
   | PhotoMessageContent
   | AudioMessageContent
   | CarouselMessageContent
+  | InteractiveMessageContent
   | TypingIndicatorContent;
 
 export interface Message {

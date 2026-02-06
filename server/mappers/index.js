@@ -1,7 +1,9 @@
 const { mapTextMessage } = require('./text');
+const { mapInteractiveMessage } = require('./interactive');
 
 const mappers = {
   text: mapTextMessage,
+  interactive: mapInteractiveMessage,
 };
 
 function getMapper(type) {
