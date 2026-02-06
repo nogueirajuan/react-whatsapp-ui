@@ -27,12 +27,12 @@ module.exports = async function messagesRoute(fastify, options) {
       const messageId = generateWamid();
       const metaResponse = formatMetaResponse(payload.to, messageId);
 
-      options.messageSubscribers.forEach((subscriber) => {
+      for (const subscriber of options.messageSubscribers.values()) {
         subscriber({
           type: 'new_message',
           message,
         });
-      });
+      }
 
       return reply.send(metaResponse);
     } catch (error) {

@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import MessageList from './MessageList';
 import InputArea from './InputArea';
 import { Message as IMessage, MessageButton, MessageContent } from '../types/Message';
-import { useWebSocket } from '../hooks/useWebSocket';
+import { useWebSocketContext } from '../context/WebSocketContext';
 
 const ChatContainer: React.FC = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -162,19 +162,19 @@ const ChatContainer: React.FC = () => {
     }, 'bot');
   }, [addMessage]);
 
-  const handleWebSocketMessage = useCallback((data: any) => {
-    if (data.type === 'new_message' && data.message) {
-      setMessages((prev) => [...prev, data.message]);
-    }
-  }, []);
+  const { lastMessage } = useWebSocketContext();
 
-  useWebSocket({
-    url: 'ws://127.0.0.1:3001/ws',
-    onMessage: handleWebSocketMessage,
-    onError: (error) => {
-      console.error('WebSocket error:', error);
-    },
-  });
+  useEffect(() => {
+    if (lastMessage?.type === 'new_message' && lastMessage.message) {
+      setMessages((prev) => {
+        const messageExists = prev.some((msg) => msg.id === lastMessage.message.id);
+        if (messageExists) {
+          return prev;
+        }
+        return [...prev, lastMessage.message];
+      });
+    }
+  }, [lastMessage]);
 
   React.useEffect(() => {
     showExamples();

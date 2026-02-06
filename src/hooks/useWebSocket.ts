@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface WebSocketMessage {
   type: string;
@@ -20,41 +20,73 @@ export const useWebSocket = ({
   onOpen,
   onClose,
 }: UseWebSocketOptions) => {
-  const connect = useCallback(() => {
-    const ws = new WebSocket(url);
-
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-      onOpen?.();
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        onMessage?.(data);
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      onError?.(error);
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-      onClose?.();
-      setTimeout(connect, 3000);
-    };
-
-    return ws;
-  }, [url, onMessage, onError, onOpen, onClose]);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const reconnectAttemptsRef = useRef(0);
+  const maxReconnectAttempts = 5;
+  const baseReconnectDelay = 1000;
 
   useEffect(() => {
-    const ws = connect();
-    return () => {
-      ws.close();
+    let isMounted = true;
+
+    const connect = () => {
+      if (!isMounted || wsRef.current?.readyState === WebSocket.OPEN) return;
+
+      const ws = new WebSocket(url);
+
+      ws.onopen = () => {
+        if (isMounted) {
+          console.log('WebSocket connected');
+          reconnectAttemptsRef.current = 0;
+          onOpen?.();
+        }
+      };
+
+      ws.onmessage = (event) => {
+        if (isMounted) {
+          try {
+            const data = JSON.parse(event.data);
+            onMessage?.(data);
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        }
+      };
+
+      ws.onerror = (error) => {
+        if (isMounted) {
+          console.error('WebSocket error:', error);
+          onError?.(error);
+        }
+      };
+
+      ws.onclose = () => {
+        if (isMounted) {
+          console.log('WebSocket disconnected');
+          onClose?.();
+
+          if (reconnectAttemptsRef.current < maxReconnectAttempts) {
+            const delay = baseReconnectDelay * Math.pow(2, reconnectAttemptsRef.current);
+            console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttemptsRef.current + 1}/${maxReconnectAttempts})`);
+            reconnectAttemptsRef.current++;
+            reconnectTimeoutRef.current = setTimeout(connect, delay);
+          }
+        }
+      };
+
+      wsRef.current = ws;
     };
-  }, [connect]);
+
+    connect();
+
+    return () => {
+      isMounted = false;
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [url, onMessage, onError, onOpen, onClose]);
 };
