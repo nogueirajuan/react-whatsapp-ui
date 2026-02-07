@@ -4,6 +4,7 @@ const {
   formatMetaResponse,
 } = require('../utils/messageMapper');
 const { validateMessagePayload } = require('../schemas/messageSchema');
+const { emitWebhook } = require('../utils/webhookEmitter');
 
 module.exports = async function messagesRoute(fastify, options) {
   fastify.post('/:version/:waba_id/messages', async (request, reply) => {
@@ -35,6 +36,10 @@ module.exports = async function messagesRoute(fastify, options) {
           type: 'new_message',
           message,
         });
+      }
+
+      if (message.content.type === 'text' && message.content.text) {
+        await emitWebhook(message.content.text);
       }
 
       return reply.send(metaResponse);
